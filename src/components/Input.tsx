@@ -65,6 +65,7 @@ export default function MultipleSelect() {
   const [displayOption, setdisplayOption] = React.useState<string[]>([]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    console.log(event.target.value)
     setdisplayOption(event.target.value as string[]);
   };
 
