@@ -1,9 +1,7 @@
 import { createSlice, PayloadAction } from 'redux-starter-kit';
 
-export type Labels = {
-  labels: string[];
 
-};
+
 
 export type ApiErrorAction = {
   error: string;
@@ -15,15 +13,15 @@ const initialState = {
 
 
 const slice = createSlice({
-  name: 'label',
+  name: 'labels',
   initialState,
   reducers: {
-    weatherDataRecevied: (state, action: PayloadAction<Labels) => {
-      const {labels} = action.payload
+    labelSelectionRecevied: (state, action: PayloadAction<string[]>) => {
+      const labels = action.payload
       state.labels = labels;
 
     },
-    weatherApiErrorReceived: (state, action: PayloadAction<ApiErrorAction>) => state,
+    labelErrorReceived: (state, action: PayloadAction<ApiErrorAction>) => state,
   },
 });
 

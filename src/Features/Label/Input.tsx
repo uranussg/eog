@@ -7,8 +7,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
+import { useDispatch, useSelector } from 'react-redux';
+import { actions } from './reducer';
+import { useStore } from 'react-redux'
+import { Provider, createClient, useQuery } from 'urql';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,12 +45,12 @@ const MenuProps = {
 };
 
 const options = [
-  'flareTemp',
-  'casingPressure',
-  'injValve',
-  'oilTemp',
-  'tubingPressure',
-  'waterTemp',
+  "flareTemp",
+  "casingPressure",
+  "injValve",
+  "oilTemp",
+  "tubingPressure",
+  "waterTemp",
 ];
 
 function getStyles(option: string, displayOption: string[], theme: Theme) {
@@ -58,15 +61,49 @@ function getStyles(option: string, displayOption: string[], theme: Theme) {
         : theme.typography.fontWeightMedium,
   };
 }
-
-export default function MultipleSelect() {
+const client = createClient({
+    url: 'https://react.eogresources.com/graphql',
+  });
+const query = `
+  query{
+    getMultipleMeasurements(input:{
+      metricName:"flareTemp",
+      after:1601309311284,
+      before:1601309321284
+    }){
+      measurements{
+        at,
+        value,
+    }
+    }
+  }
+  `;
+export default  () => {
+  return (
+    <Provider value={client}>
+      <MultipleSelect />
+    </Provider >
+  );
+};
+function MultipleSelect() {
   const classes = useStyles();
   const theme = useTheme();
+  const state = useStore().getState()
   const [displayOption, setdisplayOption] = React.useState<string[]>([]);
-
+  const dispatch = useDispatch();
+    let metricName = "flareTemp"
+    let heartBeat = 1601309321284
+    const [{data}] = useQuery({
+      query,
+      variables: {
+        heartBeat
+      },
+    });
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    console.log(event.target.value)
+
+    // console.log(data)
     setdisplayOption(event.target.value as string[]);
+    dispatch(actions.labelSelectionRecevied(event.target.value as string[]))
   };
 
   const handleChangeMultiple = (event: React.ChangeEvent<{ value: unknown }>) => {
