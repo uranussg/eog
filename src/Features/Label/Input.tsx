@@ -10,6 +10,8 @@ import Select from '@material-ui/core/Select';
 import Chip from '@material-ui/core/Chip';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from './reducer';
+import { actions as beatActions} from '../HeartBeat/reducer'
+import { actions as dataActions} from '../Chart/reducer'
 import { useStore } from 'react-redux'
 import { Provider, createClient, useQuery } from 'urql';
 
@@ -64,20 +66,27 @@ function getStyles(option: string, displayOption: string[], theme: Theme) {
 const client = createClient({
     url: 'https://react.eogresources.com/graphql',
   });
+// const query = `
+//   query{
+//     getMultipleMeasurements(input:{
+//       metricName:"flareTemp",
+//       after:1601321828528,
+//       before:1601321928528
+//     }){
+//       measurements{
+//         at,
+//         value,
+//     }
+//     }
+//   }
+//   `;
+
+  
 const query = `
-  query{
-    getMultipleMeasurements(input:{
-      metricName:"flareTemp",
-      after:1601309311284,
-      before:1601309321284
-    }){
-      measurements{
-        at,
-        value,
+    query{
+      heartBeat
     }
-    }
-  }
-  `;
+    `;
 export default  () => {
   return (
     <Provider value={client}>
@@ -91,19 +100,15 @@ function MultipleSelect() {
   const state = useStore().getState()
   const [displayOption, setdisplayOption] = React.useState<string[]>([]);
   const dispatch = useDispatch();
-    let metricName = "flareTemp"
-    let heartBeat = 1601309321284
     const [{data}] = useQuery({
-      query,
-      variables: {
-        heartBeat
-      },
+      query
     });
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
 
-    // console.log(data)
+    console.log(data.heartBeat)
     setdisplayOption(event.target.value as string[]);
     dispatch(actions.labelSelectionRecevied(event.target.value as string[]))
+    dispatch(beatActions.beatDataRecevied(data.heartBeat))
   };
 
   const handleChangeMultiple = (event: React.ChangeEvent<{ value: unknown }>) => {

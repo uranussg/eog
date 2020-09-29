@@ -23,30 +23,27 @@ export default () => {
   );
 };
 
-const getHeartBeat = () => {
-    const query = `
-  query{
-    heartBeat
-  }
-  `;
+// const getHeartBeat = () => {
+//     const query = `
+//   query{
+//     heartBeat
+//   }
+//   `;
 
-  const [{data}] = useQuery({
-    query
-  });
+//   const [{data}] = useQuery({
+//     query
+//   });
 
-  return data.heartBeat
-}
-
-const Data = () => {
-  // Default to houston
+//   return data.heartBeat
+// }
 
 
-  
-  
-  
+
+const Data = () => {  
   const dispatch = useDispatch();
-  const labels = useStore().getState().labels.labels
-  const heartBeat: String = getHeartBeat()
+  const state = useStore().getState()
+  const labels = state.labels.labels
+  const heartBeat = state.heartBeat.heartBeat
   let input = labels.map( (metricName: any) => {
     return `{
       metricName:${metricName},
@@ -77,16 +74,15 @@ const Data = () => {
   
     useEffect(() => {
     if (error) {
-      dispatch(actions.weatherApiErrorReceived({ error: error.message }));
+      dispatch(actions.dataErrorReceived({ error: error.message }));
       return;
     }
     if (!data) return;
-    const { getWeatherForLocation } = data;
-    dispatch(actions.weatherDataRecevied(getWeatherForLocation));
+    const { getMultipleMeasurements } = data;
+    dispatch(actions.dataRecevied(getMultipleMeasurements));
   }, [dispatch, labels, error]);
 
   // if (fetching) return <LinearProgress />;
-
   // return <Chip />;
 };
 
